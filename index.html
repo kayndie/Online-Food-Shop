@@ -1,0 +1,140 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Point of Sale System</title>
+<style>
+    body {
+        font-family: Arial, sans-serif;
+        background-color: skyblue;
+    }
+    .card {
+        border: 1px solid #ccc;
+        border-radius: 10px;
+        padding: 20px;
+        background-color: #fff;
+        box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+        width: 400px;
+        margin-bottom: 20px;
+    }
+    #pos-container {
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+    }
+    .product {
+        margin: 10px;
+        padding: 10px;
+        border: 1px solid #ccc;
+        border-radius: 5px;
+        transition: background-color 0.3s ease;
+    }
+    .product:hover {
+        background-color: #f0f0f0;
+    }
+    #cart {
+        border: 1px solid #ccc;
+        border-radius: 5px;
+        padding: 10px;
+        margin-top: 20px;
+    }
+    #total {
+        font-weight: bold;
+        margin-top: 10px;
+    }
+</style>
+</head>
+<body>
+<div id="pos-container">
+    <div class="card">
+        <h1>Online Food Shop</h1>
+        <div id="products">
+            <div class="product">
+                <span>Rib eye Steak - ₱3200</span>
+                <input type="number" id="qtySteak" min="1" value="1">
+                <button onclick="addToCart('Rib eye Steak', 3200, 'qtySteak')">Add to Cart</button>
+            </div>
+            <div class="product">
+                <span>Ramen - ₱132</span>
+                <input type="number" id="qtyRamen" min="1" value="1">
+                <button onclick="addToCart('Ramen', 132, 'qtyRamen')">Add to Cart</button>
+            </div>
+            <div class="product">
+                <span>Buffalo Wings - ₱119</span>
+                <input type="number" id="qtyWings" min="1" value="1">
+                <button onclick="addToCart('Buffalo Wings', 119, 'qtyWings')">Add to Cart</button>
+            </div>
+            <div class="product">
+                <span>Chicken Karage - ₱132</span>
+                <input type="number" id="qtyKarage" min="1" value="1">
+                <button onclick="addToCart('Chicken Karage', 132, 'qtyKarage')">Add to Cart</button>
+            </div>
+            <div class="product">
+                <span>Katsudon - ₱137</span>
+                <input type="number" id="qtyKatsudon" min="1" value="1">
+                <button onclick="addToCart('Katsudon', 137, 'qtyKatsudon')">Add to Cart</button>
+            </div>
+        </div>
+    </div>
+    <div class="card">
+        <h2>Order List</h2>
+        <ul id="cart-items"></ul>
+        <div id="total">Total: ₱0</div><br>
+        <label for="amountPaid">Amount Paid: ₱</label>
+        <input type="number" id="amountPaid" min="0"><br><br>
+        <button onclick="calculateChange()">Change</button>
+        <div id="change"></div>
+    </div>
+</div>
+
+<script>
+    let cart = [];
+
+    function addToCart(productName, price, qtyId) {
+        const quantity = parseInt(document.getElementById(qtyId).value);
+        if (quantity <= 0 || isNaN(quantity)) {
+            alert('Please enter a valid quantity.');
+            return;
+        }
+        cart.push({ name: productName, price: price, quantity: quantity });
+        updateCart();
+    }
+
+    function updateCart() {
+        const cartItems = document.getElementById('cart-items');
+        let total = 0;
+        cartItems.innerHTML = '';
+        cart.forEach((item, index) => {
+            const li = document.createElement('li');
+            li.textContent = `${item.name} - ₱${item.price} x ${item.quantity}`;
+            const deleteButton = document.createElement('button');
+            deleteButton.textContent = 'Delete';
+            deleteButton.onclick = function() {
+                cart.splice(index, 1);
+                updateCart();
+            };
+            li.appendChild(deleteButton);
+            cartItems.appendChild(li);
+            total += item.price * item.quantity;
+        });
+        document.getElementById('total').textContent = `Total: ₱${total}`;
+    }
+
+    function calculateChange() {
+    const total = cart.reduce((acc, item) => acc + item.price * item.quantity, 0);
+    const amountPaid = parseFloat(document.getElementById('amountPaid').value);
+    if (isNaN(amountPaid)) {
+        alert('Please enter a valid amount paid.');
+        return;
+    }
+    const change = amountPaid - total;
+    if (change < 0) {
+        alert('Insufficient amount paid.');
+        return;
+    }
+    alert(`Thank you for ordering! Your total change is ₱${change.toFixed(2)}`);
+}
+</script>
+</body>
+</html>
